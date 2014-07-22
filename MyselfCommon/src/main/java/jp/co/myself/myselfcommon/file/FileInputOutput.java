@@ -55,6 +55,16 @@ public class FileInputOutput {
 	private static final String CHAR_ENCODE = "UTF-8";
 	
 	/**
+	 * 外部ストレージのパスの一部です。
+	 */
+	private static final String EXTERNAL_FILES_DIRS_PART1 = "/Android/data/";
+	
+	/**
+	 * 外部ストレージのパスの一部です。
+	 */
+	private static final String EXTERNAL_FILES_DIRS_PART2 = "/files";
+	
+	/**
 	 * Android端末内のアプリケーション領域(/data/data/[アプリケーションのパッケージ名]/files)へのファイル書き込み用インスタンスを返却します。
 	 * 書き込み用インスタンスの取得に失敗した場合は、[null]を返却します。
 	 * 指定のファイルが存在しない場合は、新規作成します。
@@ -132,7 +142,12 @@ public class FileInputOutput {
 			
 			try {
 				// ストレージ内のファイルパスを構築します。
-				String filePath = storagePath + "/" + packageName + "/" + fileName;
+				String filePath = null;
+				if (Build.VERSION.SDK_INT > 18) {
+					filePath = storagePath + EXTERNAL_FILES_DIRS_PART1 + packageName + EXTERNAL_FILES_DIRS_PART2 + "/" + fileName;
+				} else {
+					filePath = storagePath + "/" + packageName + "/" + fileName;
+				}
 				
 				File file = new File(filePath.toString());
 				File parentDir = new File(file.getParent());
@@ -168,7 +183,7 @@ public class FileInputOutput {
 	 */
 	public static PrintWriter getPrintWriterForExternalStorageFile(String fileName, Context context) throws CommonException {
 		
-		String externalStoragePath = getSdcardPath();
+		String externalStoragePath = getSdcardPath(context);
 		
 		return getPrintWriterForStorageFile(externalStoragePath, context, fileName);
 	}
@@ -188,7 +203,7 @@ public class FileInputOutput {
 	public static PrintWriter getPrintWriterForExternalStorageCsvFile(String fileName, Context context, String[] headers) throws CommonException {
 		
 		// オープンするファイルの存在確認をします。
-		boolean isNewFile = isExists(getSdcardPath() + "/" + context.getPackageName() + "/" + fileName);
+		boolean isNewFile = isExists(getSdcardPath(context) + "/" + context.getPackageName() + "/" + fileName);
 		
 		PrintWriter writer = getPrintWriterForExternalStorageFile(fileName, context);
 		
@@ -310,34 +325,44 @@ public class FileInputOutput {
 	 * @return String
 	 * @throws CommonException
 	 */
-	private static String getSdcardPath() throws CommonException {
-		
-		if (Build.VERSION.SDK_INT > 18) {
-			return Environment.getExternalStorageDirectory().toString();
-		}
+	private static String getSdcardPath(Context context) throws CommonException {
 		
 		// マウントパスのリストです。
 		ArrayList<String> pathList = new ArrayList<String>();
 		
-		// マウント情報のファイルを一行ごと解析して、マウントパスをリストに保管します。
-		File vold_fstab = new File(VOLD_FSTAB_PATH);
-		Scanner scanner = null;
-		try {
-			scanner = new Scanner(vold_fstab);
-			while (scanner.hasNextLine()) {
-				String line = scanner.nextLine();
-				if (line.startsWith(MOUNT_LINE_PREFIX)) {
-					String path = line.replaceAll("\t", " ").split(" ")[2];
-					if (!pathList.contains(path)) {
-						pathList.add(path);
-					}
+		// 実行環境がAndroid4.4以降の場合の処理です。
+		if (Build.VERSION.SDK_INT > 18) {
+			File[] paths = context.getExternalFilesDirs(null);
+			if (paths != null && paths.length > 0) {
+				for (int i = 0; i < paths.length; i++) {
+					String path = paths[i].getPath().replace(EXTERNAL_FILES_DIRS_PART1 +
+							context.getPackageName() +
+							EXTERNAL_FILES_DIRS_PART2,
+							"");
+					pathList.add(path);
 				}
 			}
-		} catch (FileNotFoundException e) {
-			throw new CommonException(e);
-		} finally {
-			if (scanner != null) {
-				scanner.close();
+		} else {
+			// マウント情報のファイルを一行ごと解析して、マウントパスをリストに保管します。
+			File vold_fstab = new File(VOLD_FSTAB_PATH);
+			Scanner scanner = null;
+			try {
+				scanner = new Scanner(vold_fstab);
+				while (scanner.hasNextLine()) {
+					String line = scanner.nextLine();
+					if (line.startsWith(MOUNT_LINE_PREFIX)) {
+						String path = line.replaceAll("\t", " ").split(" ")[2];
+						if (!pathList.contains(path)) {
+							pathList.add(path);
+						}
+					}
+				}
+			} catch (FileNotFoundException e) {
+				throw new CommonException(e);
+			} finally {
+				if (scanner != null) {
+					scanner.close();
+				}
 			}
 		}
 		
