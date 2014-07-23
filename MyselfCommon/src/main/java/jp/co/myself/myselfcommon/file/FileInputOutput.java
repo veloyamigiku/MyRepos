@@ -16,13 +16,15 @@ import java.util.Scanner;
 
 import jp.co.myself.myselfcommon.exception.CommonException;
 
-import com.orangesignal.csv.Csv;
-import com.orangesignal.csv.CsvConfig;
-import com.orangesignal.csv.handlers.StringArrayListHandler;
+import org.apache.commons.io.FileUtils;
 
 import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
+
+import com.orangesignal.csv.Csv;
+import com.orangesignal.csv.CsvConfig;
+import com.orangesignal.csv.handlers.StringArrayListHandler;
 
 /**
  * (共通)Android端末のローカルファイル入出力クラスです。
@@ -416,6 +418,49 @@ public class FileInputOutput {
 		}
 		
 		return isMounted;
+	}
+	
+	/**
+	 * Android端末のストレージ(内部・外部)にアプリケーション領域のデータをバックアップします。
+	 * @throws CommonException 
+	 */
+	public static void backupApplicationDataInStorage(Context applicationContext, String destinationDirectoryPath) throws CommonException {
+		
+		File sourceDirectory = new File(LOCAL_DIRECTORY + "/" + applicationContext.getPackageName());
+		File destinationDirectory = new File(destinationDirectoryPath);
+		
+		try {
+			FileUtils.copyDirectory(sourceDirectory, destinationDirectory, true);
+		} catch (IOException e) {
+			throw new CommonException(new Exception(e));
+		}
+	}
+	
+	/**
+	 * Android端末の内部ストレージにアプリケーション領域のデータをバックアップします。
+	 * @throws CommonException 
+	 */
+	public static void backupApplicationDataInInternalStorage(Context applicationContext) throws CommonException {
+		
+		String destinationDirectoryPath = Environment.getExternalStorageDirectory().getPath() + "/" + applicationContext.getPackageName();
+		
+		backupApplicationDataInStorage(applicationContext, destinationDirectoryPath);
+		
+	}
+	
+	/**
+	 * Android端末の外部ストレージにアプリケーション領域のデータをバックアップします。
+	 * @throws CommonException 
+	 */
+	public static void backupApplicationDataInExternalStorage(Context applicationContext) throws CommonException {
+		
+		String externalStoragePath = getSdcardPath(applicationContext);
+		if (externalStoragePath == null) {
+			throw new CommonException(new Exception());
+		}
+		String destinationDirectoryPath = externalStoragePath + EXTERNAL_FILES_DIRS_PART1 + applicationContext.getPackageName();
+		
+		backupApplicationDataInStorage(applicationContext, destinationDirectoryPath);
 	}
 	
 }
