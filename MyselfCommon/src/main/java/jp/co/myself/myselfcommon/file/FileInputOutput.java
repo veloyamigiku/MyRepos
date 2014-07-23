@@ -59,12 +59,12 @@ public class FileInputOutput {
 	/**
 	 * 外部ストレージのパスの一部です。
 	 */
-	private static final String EXTERNAL_FILES_DIRS_PART1 = "/Android/data/";
+	private static final String APPLICATION_DIRECTORY = "/Android/data/";
 	
 	/**
-	 * 外部ストレージのパスの一部です。
+	 * ファイル専用のディレクトリです。
 	 */
-	private static final String EXTERNAL_FILES_DIRS_PART2 = "/files";
+	private static final String FILES_DIRECTORY = "/files";
 	
 	/**
 	 * Android端末内のアプリケーション領域(/data/data/[アプリケーションのパッケージ名]/files)へのファイル書き込み用インスタンスを返却します。
@@ -110,7 +110,7 @@ public class FileInputOutput {
 	public static PrintWriter getPrintWriterForLocalCsvFile(Context context, String fileName, String[] headers) throws CommonException {
 		
 		// オープンするファイルの存在確認をします。
-		boolean isNewFile = isExists(LOCAL_DIRECTORY + "/" + context.getPackageName() + "/" + fileName);
+		boolean isNewFile = isExists(LOCAL_DIRECTORY + "/" + context.getPackageName() + FILES_DIRECTORY + "/" + fileName);
 		
 		PrintWriter writer = getPrintWriterForLocalFile(context, fileName);
 		
@@ -144,12 +144,7 @@ public class FileInputOutput {
 			
 			try {
 				// ストレージ内のファイルパスを構築します。
-				String filePath = null;
-				if (Build.VERSION.SDK_INT > 18) {
-					filePath = storagePath + EXTERNAL_FILES_DIRS_PART1 + packageName + EXTERNAL_FILES_DIRS_PART2 + "/" + fileName;
-				} else {
-					filePath = storagePath + "/" + packageName + "/" + fileName;
-				}
+				String filePath = storagePath + APPLICATION_DIRECTORY + packageName + FILES_DIRECTORY + "/" + fileName;
 				
 				File file = new File(filePath.toString());
 				File parentDir = new File(file.getParent());
@@ -205,7 +200,7 @@ public class FileInputOutput {
 	public static PrintWriter getPrintWriterForExternalStorageCsvFile(String fileName, Context context, String[] headers) throws CommonException {
 		
 		// オープンするファイルの存在確認をします。
-		boolean isNewFile = isExists(getSdcardPath(context) + "/" + context.getPackageName() + "/" + fileName);
+		boolean isNewFile = isExists(getSdcardPath(context) + APPLICATION_DIRECTORY + context.getPackageName() + FILES_DIRECTORY + "/" + fileName);
 		
 		PrintWriter writer = getPrintWriterForExternalStorageFile(fileName, context);
 		
@@ -250,7 +245,7 @@ public class FileInputOutput {
 	public static PrintWriter getPrintWriterForInternalStorageCsvFile(String fileName, Context context, String[] headers) throws CommonException {
 		
 		// オープンするファイルの存在確認をします。
-		boolean isNewFile = isExists(Environment.getExternalStorageDirectory() + "/" + context.getPackageName() + "/" + fileName);
+		boolean isNewFile = isExists(Environment.getExternalStorageDirectory() + APPLICATION_DIRECTORY + context.getPackageName() + FILES_DIRECTORY + "/" + fileName);
 		
 		PrintWriter writer = getPrintWriterForInternalStorageFile(fileName, context);
 		
@@ -337,9 +332,9 @@ public class FileInputOutput {
 			File[] paths = context.getExternalFilesDirs(null);
 			if (paths != null && paths.length > 0) {
 				for (int i = 0; i < paths.length; i++) {
-					String path = paths[i].getPath().replace(EXTERNAL_FILES_DIRS_PART1 +
+					String path = paths[i].getPath().replace(APPLICATION_DIRECTORY +
 							context.getPackageName() +
-							EXTERNAL_FILES_DIRS_PART2,
+							FILES_DIRECTORY,
 							"");
 					pathList.add(path);
 				}
@@ -371,7 +366,7 @@ public class FileInputOutput {
 		// マウントパスのリストから、内蔵ストレージ(取り外し不可)のパスを除去します。
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
 			if (!Environment.isExternalStorageRemovable()) {
-				pathList.remove(Environment.getExternalStorageDirectory().getPath());
+				pathList.remove(Environment.getExternalStorageDirectory().toString());
 			}
 		}
 		
@@ -424,7 +419,7 @@ public class FileInputOutput {
 	 * Android端末のストレージ(内部・外部)にアプリケーション領域のデータをバックアップします。
 	 * @throws CommonException 
 	 */
-	public static void backupApplicationDataInStorage(Context applicationContext, String destinationDirectoryPath) throws CommonException {
+	private static void backupApplicationDataInStorage(Context applicationContext, String destinationDirectoryPath) throws CommonException {
 		
 		File sourceDirectory = new File(LOCAL_DIRECTORY + "/" + applicationContext.getPackageName());
 		File destinationDirectory = new File(destinationDirectoryPath);
@@ -442,7 +437,7 @@ public class FileInputOutput {
 	 */
 	public static void backupApplicationDataInInternalStorage(Context applicationContext) throws CommonException {
 		
-		String destinationDirectoryPath = Environment.getExternalStorageDirectory().getPath() + "/" + applicationContext.getPackageName();
+		String destinationDirectoryPath = Environment.getExternalStorageDirectory().toString() + APPLICATION_DIRECTORY + applicationContext.getPackageName();
 		
 		backupApplicationDataInStorage(applicationContext, destinationDirectoryPath);
 		
@@ -458,7 +453,7 @@ public class FileInputOutput {
 		if (externalStoragePath == null) {
 			throw new CommonException(new Exception());
 		}
-		String destinationDirectoryPath = externalStoragePath + EXTERNAL_FILES_DIRS_PART1 + applicationContext.getPackageName();
+		String destinationDirectoryPath = externalStoragePath + APPLICATION_DIRECTORY + applicationContext.getPackageName();
 		
 		backupApplicationDataInStorage(applicationContext, destinationDirectoryPath);
 	}
