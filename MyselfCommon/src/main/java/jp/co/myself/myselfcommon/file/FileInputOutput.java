@@ -57,12 +57,12 @@ public class FileInputOutput {
 	private static final String CHAR_ENCODE = "UTF-8";
 	
 	/**
-	 * 外部ストレージのパスの一部です。
+	 * アプリケーションのディレクトリです。
 	 */
 	private static final String APPLICATION_DIRECTORY = "/Android/data/";
 	
 	/**
-	 * ファイル専用のディレクトリです。
+	 * アプリケーションのファイル専用のディレクトリです。
 	 */
 	private static final String FILES_DIRECTORY = "/files";
 	
