@@ -1,5 +1,6 @@
 package jp.co.myself.myselfcommon.db.dao;
 
+import jp.co.myself.myselfcommon.db.MyselfOpenHelper;
 import jp.co.myself.myselfcommon.db.entity.BaseEntity;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -9,27 +10,29 @@ public abstract class BaseDao<T extends BaseEntity> {
 	
 	private String tableName;
 	
-	private SQLiteDatabase db;
+	protected SQLiteDatabase readableDb;
+	protected SQLiteDatabase writableDb;
 	
-	public BaseDao(SQLiteDatabase db, String tableName) {
-		this.db = db;
+	public BaseDao(MyselfOpenHelper moh, String tableName) {
+		this.readableDb = moh.getReadableDatabase();
+		this.writableDb = moh.getWritableDatabase();
 		this.tableName = tableName;
 	}
 	
 	public long insert(T e) {
 		ContentValues values = getContentValues(e);
-		return this.db.insert(tableName, null, values);
+		return this.writableDb.insert(tableName, null, values);
 	}
 	
 	public int update(T e) {
 		ContentValues values = getContentValues(e);
 		String whereClause = BaseEntity.ROWID + "=" + e.getRowId();
-		return this.db.update(tableName, values, whereClause, null);
+		return this.writableDb.update(tableName, values, whereClause, null);
 	}
 	
 	public int delete(T e) {
 		String whereClause = BaseEntity.ROWID + "=" + e.getRowId();
-		return this.db.delete(this.tableName, whereClause, null);
+		return this.writableDb.delete(this.tableName, whereClause, null);
 	}
 	
 	abstract protected ContentValues getContentValues(T e);

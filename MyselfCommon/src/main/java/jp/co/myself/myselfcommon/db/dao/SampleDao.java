@@ -2,27 +2,24 @@ package jp.co.myself.myselfcommon.db.dao;
 
 import java.util.ArrayList;
 
+import jp.co.myself.myselfcommon.db.MyselfOpenHelper;
 import jp.co.myself.myselfcommon.db.entity.BaseEntity;
 import jp.co.myself.myselfcommon.db.entity.SampleEntity;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
 public class SampleDao extends BaseDao<SampleEntity> {
 	
 	private static final String FIND_ALL_SQL = "select " + BaseEntity.ROWID + ",* from " + SampleEntity.TABLE_NAME + ";";
 	
-	private SQLiteDatabase db;
-	
-	public SampleDao(SQLiteDatabase db) {
-		super(db, SampleEntity.TABLE_NAME);
-		this.db = db;
+	public SampleDao(MyselfOpenHelper moh) {
+		super(moh, SampleEntity.TABLE_NAME);
 	}
 	
 	public ArrayList<SampleEntity> findAll() {
 		
 		ArrayList<SampleEntity> result = new ArrayList<SampleEntity>();
-		Cursor c = db.rawQuery(FIND_ALL_SQL, null);
+		Cursor c = this.readableDb.rawQuery(FIND_ALL_SQL, null);
 		while (c.moveToNext()) {
 			result.add(fromCursorToEntity(c));
 		}
