@@ -19,7 +19,7 @@ public class HelloAndroidActivity extends Activity {
 		
 		Button button = (Button) findViewById(R.id.button1);
 		button.setOnClickListener(new OnClickListener() {
-			
+			// sample comment
 			public void onClick(View v) {
 				Uri uri = Uri.parse("market://details?id=com.tdevaux.googleurlshortener");
 				Intent intent = new Intent(Intent.ACTION_VIEW, uri);
