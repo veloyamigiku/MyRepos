@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TabNaviTemplate</string>
+    <string name="hello">Hello TabNaviTemplate!</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    
+    <string name="first_fragment">This is first fragment.</string>
+    <string name="second_fragment">This is second fragment.</string>
+    <string name="third_fragment">This is third fragment.</string>
+    <string name="frist_fragment_title">First</string>
+    <string name="second_fragment_title">Second</string>
+    <string name="third_fragment_title">Third</string>
+</resources>
