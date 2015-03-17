@@ -26,8 +26,8 @@ public abstract class BasePagerAdapter<T> extends PagerAdapter {
 	 * コンストラクタです。
 	 */
 	public BasePagerAdapter(Context context) {
-		pageList = new ArrayList<T>();
 		this.context = context;
+		pageList = new ArrayList<T>();
 	}
 
 	/**
