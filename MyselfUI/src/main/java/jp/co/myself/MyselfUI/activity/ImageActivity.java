@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+/**
+ * 画像ビューアのアクティビティです。
+ */
 public class ImageActivity extends Activity {
 	
 	/**
