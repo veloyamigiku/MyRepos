@@ -1,5 +1,6 @@
-package jp.co.myself.MyselfUI;
+package jp.co.myself.MyselfUI.activity;
 
+import jp.co.myself.MyselfUI.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
