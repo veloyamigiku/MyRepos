@@ -21,14 +21,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>jp.co.myself</groupId>
-			<artifactId>MyselfCommon</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.activeandroid</groupId>
-			<artifactId>activeandroid</artifactId>
-			<version>3.1-SNAPSHOT</version>
+			<groupId>android.support</groupId>
+			<artifactId>compatibility-v4</artifactId>
+			<version>21.0.3</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -75,7 +70,7 @@
 					<sdk>
 						<platform>16</platform>
 					</sdk>
-									</configuration>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
