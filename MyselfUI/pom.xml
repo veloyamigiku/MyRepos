@@ -25,6 +25,11 @@
 			<artifactId>compatibility-v4</artifactId>
 			<version>21.0.3</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.chrisbanes.photoview</groupId>
+			<artifactId>library</artifactId>
+			<version>1.2.2</version>
+		</dependency>
 	</dependencies>
 	
 	<build>

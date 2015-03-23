@@ -1,4 +1,4 @@
-package jp.co.myself.MyselfUI.pagerview.adapter;
+package jp.co.myself.MyselfUI.viewpager.adapter;
 
 import java.util.ArrayList;
 
